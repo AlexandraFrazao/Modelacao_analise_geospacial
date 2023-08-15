@@ -4,55 +4,6 @@ import matplotlib.pyplot as plt
 
 df = pd.read_pickle('final_fiscrep.pickle')
 
-
-
-#df = df[df['NUTSII_code']=='PT11']
-#df = df[df.NameWoDiacritics=='Lisboa']
-#df = df[df.NameWoDiacritics.isin(['Caminha', 'Setubal', 'Sesimbra'])]
-df = df[~df.NameWoDiacritics.isin(['Caminha', 'Setubal', 'Sesimbra'])]
-
-print(len(df))
-
-sns.set_style("whitegrid")
-sns.set_palette("pastel")
-
-
-# Create a bar plot using Seaborn
-sns.countplot(x="Year", data=df)
-
-# Set the title and axis labels
-plt.title("Number of Fiscalizations")
-plt.xlabel("Year")
-plt.ylabel("Number")
-
-plt.show()
-
-
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-variable = 'XIV'
-
-infrac_data = df[df[variable] == 1]
-
-sns.set_style("whitegrid")
-sns.set_palette("pastel")
-
-
-# Create a bar plot using Seaborn
-sns.countplot(x="Year", data=infrac_data)
-
-# Set the title and axis labels
-plt.title("Number of Infracs per Year per infrac number " + variable)
-plt.xlabel("Year")
-plt.ylabel("Number")
-
-plt.show()
-
-
-import seaborn as sns
-import matplotlib.pyplot as plt
-
 # Create a new dataframe with the counts of the variable by year
 counts_df = df.groupby('Year')[variable].value_counts().unstack().fillna(0)
 counts_df = counts_df.astype(int)
@@ -206,10 +157,6 @@ plt.show()
 
 
 
-
-
-
-
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -243,3 +190,64 @@ plt.ylabel("Proporção")
 
 # Display the plot
 plt.show()
+
+
+para_nuts = pd.DataFrame(merged_df.NameWoDiacritics.unique())
+
+para_nuts.to_excel('para_nuts.xlsx')
+
+
+# Count unique 'matched_CFR' values
+unique_matched_cfr_count = merged_df['matched_CFR'].nunique()
+# Count unique 'matched_CFR' values with 'Result' equal to 'PRESUM'
+presum_matched_cfr_count = merged_df.loc[merged_df['Result'] == 'PRESUM', 'matched_CFR'].nunique()
+
+presum_vessels = merged_df[merged_df['Result'] == 'PRESUM']['Name']
+print(presum_vessels)
+duplicated_vessels = presum_vessels.value_counts().loc[lambda x: x > 1]
+total_frequency = duplicated_vessels.sum()
+print(duplicated_vessels)
+
+import pandas as pd
+
+presum_vessels = merged_df[merged_df['Result'] == 'PRESUM']['Name']
+duplicated_vessels = presum_vessels.value_counts().loc[lambda x: x > 1]
+
+# Create the table
+table = pd.DataFrame({'Vessel Name': duplicated_vessels.index, 'Frequency': duplicated_vessels.values})
+print(table)
+
+
+
+
+
+
+#Artes de Pesca
+#quantidade
+artes_diferentes = merged_df['Gear'].nunique()
+print("Número de artes diferentes: ", artes_diferentes)
+
+
+#Year
+gear_counts = merged_df['Gear'].value_counts()
+gear_counts_presum = merged_df.loc[merged_df['Result'].str.contains('PRESUM'), 'Gear'].value_counts()
+print(gear_counts)
+print(gear_counts_presum)
+
+
+#NUTSII
+gear_counts_NUTS = merged_df.groupby(['Gear', 'NUTSII_code']).size()
+gear_counts_presum_NUTS = merged_df.loc[merged_df['Result'].str.contains('PRESUM')].groupby(['Gear', 'NUTSII_code']).size()
+print(gear_counts_NUTS)
+print(gear_counts_presum_NUTS)
+
+
+#descrição
+artes_descricao = merged_df.groupby('Gear').describe()
+
+columns_of_interest = ['LOA']
+artes_descricao = merged_df.groupby(['Gear', 'Year'])[columns_of_interest].describe()
+artes_descricao['Presum_Count'] = merged_df[merged_df['Result'] == 'PRESUM'].groupby(['Gear', 'Year']).size()
+artes_descricao.reset_index(inplace=True)
+
+artes_descricao.to_csv('artes_descricao.csv', index=False)
