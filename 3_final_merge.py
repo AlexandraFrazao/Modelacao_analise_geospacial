@@ -236,13 +236,6 @@ merged_df['security'] = merged_df['Infrac_a'].apply(lambda x: 'S' if any(infrac 
 merged_df['fishery'] = np.nan
 merged_df['fishery'] = merged_df['Infrac_a'].apply(lambda x: 'P' if any(infrac in ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'] for infrac in x) else np.nan)
 
-
-#remove number to clean the html map, because they are located in land
-#numbers_to_remove = [13579, 13580, 13590, 13593, 13594, 13601, 13602, 13606, 13607, 13618, 13619, 13621, 13622, 13628, 13634, 13641, 13643, 13644, 13645, 13651, 13652, 13653, 13655, 13656, 13657, 13660, 13661, 13664, 13665, 13666, 13667, 13668, 13672, 13673, 13674, 13675, 13679, 13680, 13681, 13682, 13684, 13685, 13687, 13689, 13690, 13691, 13693, 13694, 13695, 13696, 13698, 13699, 13705, 13708, 13710, 13711, 13589, 13591, 13603, 13608, 13609, 13612, 13638, 13639, 13640, 13642, 13654, 13659, 13663, 13671, 13683, 13697, 13700, 13703, 13704, 13707, 13678, 13702, 13636, 13583, 13584, 13623, 13635, 13637, 13658, 13676, 13701, 13581]
-
-#df = df[~df['Number'].isin(numbers_to_remove)]
-#merged_df = merged_df[~merged_df['Number'].isin(numbers_to_remove)]
-
 #Delete duplicated lines
 merged_df = df.drop_duplicates(subset='Number', keep='last')
 df = df.drop_duplicates(subset='Number', keep='last')
